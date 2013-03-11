@@ -19,7 +19,6 @@ let g:mapleader=","  " set leader as ,
 
 let &termencoding=&encoding
 set fileencodings=utf-8,gb2312,gbk,gb18030
-"set termencoding=utf-8
 set encoding=prc
 
 set t_Co=256
@@ -38,7 +37,6 @@ syntax on
 " *******************************************
 "  Window
 " *******************************************
-"set scroloff=7
 set ruler          " show ruler
 set nu             " show line number
 set hidden
