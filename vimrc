@@ -26,10 +26,12 @@ set t_Co=256
 " *******************************************
 " color and Fonts
 " ******************************************
-" colorscheme   koehler_Ex
-" colorscheme  desert
-" colorscheme   new
-colorscheme   mine
+if has("gui")
+    colorscheme   koehler_ex
+else
+    colorscheme   mine
+endif
+
 syntax enable
 syntax on
 "autocmd BufEnter * : syntax syncbind fromstart
@@ -41,25 +43,32 @@ set ruler          " show ruler
 set nu             " show line number
 set hidden
 "command! Bclose call <STD>BufcloseCloseIt()  " not close window, when close buffer
-"cau GUIEnter * simalt ~x
+if has("win32")
+    au GUIEnter * simalt ~x
+endif
 
 " hide menu and toolbar
-set guioptions-=m
-set guioptions-=T
-set guioptions-=t
-set guioptions-=b
-set guioptions-=l
-set guioptions-=L
-set guioptions-=R
-set guioptions-=r
+if has("gui")
+    set guioptions-=m
+    set guioptions-=T
+    set guioptions-=t
+    set guioptions-=b
+    set guioptions-=l
+    set guioptions-=L
+    set guioptions-=R
+    set guioptions-=r
+endif
+
+if has("win32")
+    cd E:\
+endif
 
 " *******************************************
 "   Font
 " *******************************************
-"sset guifont=courier\ New:h12
-"set guifont= Bitstream\ Vera\ Sans\ Mono:h12
-"set guifont= Fixedsys:h12
-
+if has("win32")
+    set guifont=Bitstream_Vera_Sans_Mono:h10:cANSI
+endif
 
 " *******************************************
 "   pathogen
@@ -121,8 +130,9 @@ endfunction
 " update cscope.out
 function! Update_Cscope()
     silent! execute "cs kill -1"        
-    
-    "silent! execute "!dir /s/b *.c, *.cpp, *.h > cscope.files"
+    if has("win32")    
+        silent! execute "!dir /s/b *.c, *.cpp, *.h > cscope.files"
+    endif
     silent! execute "!cscope -Rb -i cscope.files"
     execute "normal :"
 
@@ -151,7 +161,11 @@ map <leader>a :call Add_CtagsCscFile()<CR>
 " *********************************************
 " taglist
 " *********************************************
+if has("win32")
+let Tlist_Ctags_Cmd='ctags.exe'
+else
 let Tlist_Ctags_Cmd='ctags'
+endif
 let Tlist_Show_One_File=1
 let Tlist_Exit_OnlyWindow=1
 ""let Tlist_File_Fold_Auto_Close=1
@@ -190,17 +204,24 @@ let g:LookupFile_TagExpr='"filenametags"'
 " ***********************************************
 "   vimwiki
 " ***********************************************
+let wiki={}
+if has("win32")
+    let s:vimwikipath = "E:\\wiki\\vimwiki"
+    let wiki.path_html=s:vimwikipath."\\html"
+    let wiki.html_header=s:vimwikipath."\\template\\header.tpl"
+else
+    let s:vimwikipath = "~/myCloud/work/wiki/vimwiki"
+    let wiki.path_html=s:vimwikipath."/html"
+    let wiki.html_header=s:vimwikipath."/template/header.tpl"
+endif
+let wiki.auto_export=1
+let wiki.nested_syntaxes={'c': 'c', 'c++': 'cpp', 'python': 'python'}
+
 let g:vimwiki_camel_case=0
 let g:vimwiki_use_mouse=0
 let g:vimwiki_menu=''
 let g:vimwiki_CJK_length=1
 let g:vimwiki_valid_html_tags='b,i,s,u,sub,sup,kbd,del,br,hr,div,code,h1'
-let wiki={}
-let wiki.auto_export=1
-let wiki.nested_syntaxes={'c': 'c', 'c++': 'cpp', 'python': 'python'}
-let wiki.path="~/myCloud//work/wiki/vimwiki"
-let wiki.path_html="~/myCloud//work/wiki/vimwiki/html"
-let wiki.html_header="~/myCloud/work/wiki/vimwiki/template/header.tpl"
 let g:vimwiki_list=[wiki]
 
 " ***********************************************
@@ -228,11 +249,13 @@ map <leader>sh  : <Plug>ShowFunc
 let g:showfuncctagsbin = 'ctags.exe'
 
 " ***********************************************
-"     vimtweak
+"     vimtweak (only winow)
 " ***********************************************
-"command -nargs=1 -bang -complete=command Setalpha :call libcallnr("vimtweak.dll", "SetAlpha", <args>)
-"command -nargs=1 -bang -complete=command Settop   :call libcallnr("vimtweak.dll", "EnableTopMost", <args>)
-"command -nargs=1 -bang -complete=command Setmax   :call libcallnr("vimtweak.dll", "EnableMaximize", <args>)
+if has("win32")
+    command -nargs=1 -bang -complete=command Setalpha :call libcallnr("vimtweak.dll", "SetAlpha", <args>)
+    command -nargs=1 -bang -complete=command Settop   :call libcallnr("vimtweak.dll", "EnableTopMost", <args>)
+    command -nargs=1 -bang -complete=command Setmax   :call libcallnr("vimtweak.dll", "EnableMaximize", <args>)
+endif
 
 " ***********************************************
 "    preview window
@@ -247,7 +270,11 @@ if ! exists('g:TagHighlightSettings')
     let g:TagHighlightSettings = {}
 endif
 let g:TagHighlightSettings['ForcedPythonVariant'] = 'if_pyth'
-let g:TagHighlightSettings['CtagsExecutable'] = 'ctags'
+if has("win32")
+    let g:TagHighlightSettings['CtagsExecutable'] = 'ctags.exe'
+else
+    let g:TagHighlightSettings['CtagsExecutable'] = 'ctags'
+endif
 
 hi CTagsNormal guifg=lightblue 
 
@@ -261,7 +288,6 @@ hi def link CTagsMember LocalVariable
 hi def link CTagsConstant  Constant
 hi def link CTagsEnumeratorName Type
 hi def link CTagsEnumerationValue Constant
-
 
 " ***********************************************
 "   Fuf
@@ -290,21 +316,32 @@ let g:showmarks_auto_enable=0
 let g:xptemplate_vars = 'author=AndyZeng&email=andy_zeng@mdv.com.tw'
 
 " ************************************************
-"   TortoiseSVN
+"   TortoiseSVN (only window)
 " ************************************************
-"let g:tortoiseSvnCmd='TortoiseProc.exe'
-"let g:tortoiseSvnInstallAutoCmd=0
+if has("win32")
+    let g:tortoiseSvnCmd='TortoiseProc.exe'
+    let g:tortoiseSvnInstallAutoCmd=0
+endif
 
 
 "************************************************
 "  Grep
 "***********************************************"
+if has("win32")
+let Grep_Path='d:\GetGnuWin32\bin\grep.exe'
+let Fgrep_Path='d:\GetGnuWin32\bin\fgrep.exe'
+let Egrep_Path='d:\GetGnuWin32\bin\egrep.exe'
+let Agrep_Path='d:\GetGnuWin32\bin\agrep.exe'
+let Grep_Find_Path='d:\GetGnuWin32\bin\find.exe'
+let Grep_Xargs_Path='d:\GetGnuWin32\bin\xargs.exe'
+else
 let Grep_Path='grep'
 let Fgrep_Path='fgrep'
 let Egrep_Path='egrep'
 let Agrep_Path='agrep'
 let Grep_Find_Path='find'
 let Grep_Xargs_Path='xargs'
+endif
 
 "************************************************
 "  indent-guide
@@ -328,4 +365,11 @@ hi link zkey ignore
 "**********************************************"
 let $MYEMAIL="AndyZeng@mdv.com.tw"
 
-let g:miniBufExplorerDebugLevel = 10
+"***********************************************
+"  power line
+"**********************************************"
+set guifont=PowerlineSymbols\ for\ Powerline
+let g:Powerline_symbols='fancy'
+let g:Powerline_dividers_override = ['>>', '>', '<<', '<']
+let g:Powerline_cache_enabled = 0
+
