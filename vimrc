@@ -207,10 +207,12 @@ let g:LookupFile_TagExpr='"filenametags"'
 let wiki={}
 if has("win32")
     let s:vimwikipath = "E:\\wiki\\vimwiki"
+    let wiki.path = s:vimwikipath
     let wiki.path_html=s:vimwikipath."\\html"
     let wiki.html_header=s:vimwikipath."\\template\\header.tpl"
 else
     let s:vimwikipath = "~/myCloud/work/wiki/vimwiki"
+    let wiki.path = s:vimwikipath
     let wiki.path_html=s:vimwikipath."/html"
     let wiki.html_header=s:vimwikipath."/template/header.tpl"
 endif
