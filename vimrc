@@ -8,8 +8,7 @@
 " *******************************************
 "                    General
 " *******************************************
-set nocompatible   " compatible to vim
-set nocp
+set nocompatible   " not compatible to vi
 set history=50     " history cmd of vim
 set autoread       " auto read file, when it changed
 set nobackup       " close backup
@@ -17,19 +16,29 @@ set noswapfile     " don't generate swap file
 
 let g:mapleader=","  " set leader as ,
 
+
+" *******************************************
+"  encoding
+" ******************************************
 let &termencoding=&encoding
 set fileencodings=utf-8,gb2312,gbk,gb18030
 set encoding=prc
 
+if has("gui")
+else
 set t_Co=256
+endif
 
 " *******************************************
-" color and Fonts
+" color scheme and Fonts
 " ******************************************
-if has("gui")
-    colorscheme   koehler_ex
+if has("gui")      " color scheme
+    colorscheme koehler_ex
 else
-    colorscheme   mine
+    colorscheme mine
+endif
+if has("win32")    " font
+    set guifont=Bitstream_Vera_Sans_Mono:h10:cANSI
 endif
 
 syntax enable
@@ -42,12 +51,15 @@ syntax on
 set ruler          " show ruler
 set nu             " show line number
 set hidden
+
 "command! Bclose call <STD>BufcloseCloseIt()  " not close window, when close buffer
+
+" maximure gvim in window
 if has("win32")
     au GUIEnter * simalt ~x
 endif
 
-" hide menu and toolbar
+" hide menu and toolbar in gvim
 if has("gui")
     set guioptions-=m
     set guioptions-=T
@@ -59,15 +71,9 @@ if has("gui")
     set guioptions-=r
 endif
 
+" go default path in window
 if has("win32")
     cd E:\
-endif
-
-" *******************************************
-"   Font
-" *******************************************
-if has("win32")
-    set guifont=Bitstream_Vera_Sans_Mono:h10:cANSI
 endif
 
 " *******************************************
@@ -107,7 +113,6 @@ set incsearch
 set hlsearch
 set showmatch
 
-
 " *******************************************
 "  tags
 " *******************************************
@@ -126,14 +131,15 @@ endfunction
 " *******************************************
 "   cscope
 " *******************************************
-
 " update cscope.out
 function! Update_Cscope()
     silent! execute "cs kill -1"        
     if has("win32")    
         silent! execute "!dir /s/b *.c, *.cpp, *.h > cscope.files"
+        silent! execute "!cscope -Rb -i cscope.files"
+    else
+        silent! execute "!cscope -Rbq"
     endif
-    silent! execute "!cscope -Rb -i cscope.files"
     execute "normal :"
 
     if filereadable("cscope.out")
@@ -178,7 +184,6 @@ let tlist_c_settings='c;c:class;d:marco;e:enum;f:function;s:structure;t:typedef;
 " *********************************************
 " cscope setup
 " *********************************************
-
 function! SearchS()
     "":cs find s <C-R>=expand("<cword>")<CR><CR>
     let s:word = expand("<cword>")
@@ -193,13 +198,6 @@ set cscopequickfix=s-,c-,d-,i-,t-,e-
 " NERDTree 
 " **********************************************
 let NERDTreeWinPos='right'
-
-
-" ***********************************************
-" lookup file
-" ***********************************************
-let g:LookupFile_DisableDefaultMap=1
-let g:LookupFile_TagExpr='"filenametags"'
 
 " ***********************************************
 "   vimwiki
@@ -218,7 +216,6 @@ else
 endif
 let wiki.auto_export=1
 let wiki.nested_syntaxes={'c': 'c', 'c++': 'cpp', 'python': 'python'}
-
 let g:vimwiki_camel_case=0
 let g:vimwiki_use_mouse=0
 let g:vimwiki_menu=''
@@ -248,7 +245,11 @@ let OmniCpp_MayCompleteScope = 1
 "   show func
 " ***********************************************
 map <leader>sh  : <Plug>ShowFunc
-let g:showfuncctagsbin = 'ctags.exe'
+if has("win32")
+    let g:showfuncctagsbin = 'ctags.exe'
+else
+    let g:showfuncctagsbin = 'ctags'
+endif
 
 " ***********************************************
 "     vimtweak (only winow)
